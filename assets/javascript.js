@@ -1,45 +1,72 @@
-$(function() {
-    var topics = ["pizza", "ramen", "cheese", "cake", "sushi", "candy", "donut", "pancake", "ice cream", "steak"];
 
-    var num = 10;
+var foods = ["pizza", "ramen", "cheese", "cake", "sushi", "candy", "donut", "pancake", "ice cream", "steak"];
+var foodTracker = [];
+var foodClickArray = [];
 
-    // if (localStorage.getItem('theTopics')) {
-    //     topics = JSON.parse(localStorage.getItem('theTopics'))
-    // } 
+function renderButtons() {
 
+    for (var i = 0; i < reactions.length; i++) {
 
-    //make buttons
-    function renderButtons() {
-        $(".button-div").empty();
+        $("header").append("<button class='btn btn-info react-btn' id='" + foods[i] + "'>" + foods[i] + "</button>");
+        foodTracker.push(foods[i]);
 
-        for (var i = 0; i < topics.length; i++) {
-            $(".button-div").prepend($("<button>").attr("data-name", topics[i]))
-        }
-      }
+    };
+    foodss = [];
+}
 
+$("header").on("click", ".react-btn", function () {
 
-    //create new button
-    $("#submit").on("click", function(event) {
-        event.preventDefault()
+    var offset = 0;
+    var foodCounter = -1;
+    foodClickArray.push($(this).attr("id"));
 
-        var thisSearch = $("#search-input").val().trim()
-        topics.push(thisSearch)
+    for (var i = 0; i < foodClickArray.length; i++) {
+        
+        if ($(this).attr("id") === foodClickArray[i]) {
+            foodCounter++;
+        };
+    };
 
-        // localStorage.clear()
-        // localStorage.setItem('theTopics', JSON.stringify(topics))
+    offset += (foodCounter * 10);
+    var searchTerm = $(this).attr("id");
+    var queryUrl = "https://api.giphy.com/v1/gifs/search?api_key=UU8fjeOg71QTR3pqQBPam5po75K6tgIJ&q=" + searchTerm + "&limit=10&offset=" + offset + "&rating=PG&lang=en"
+    
+    $.ajax({
+        url: queryUrl,
+        method: "GET"
+    }).then(function (response) {
 
-        renderButtons()
-        $("#search-input").val("")
-      })
+        console.log(response);
+        var result = response.data;
 
+        for (var i = 0; i < result.length; i++) {
 
-    //fetch data and create imgs
-    function workingBtns() {
-        $(".img-div").empty()
-        $(".img-div").append($("<div class='card'>").append($("<div>").addClass("card-header img-title")).append($("<div class='card-body'>").append($("<div class='row img-row'>"))))
+            var gifDiv = $("<div class='gifs'>");
+            var stillGifUrl = result[i].images.fixed_height_still.url;
+            var animateGifUrl = result[i].images.fixed_height.url;
+            var gifIndex = result[i].title.indexOf("GIF")
+            var ratingP = $("<p>").text("Rated: " + result[i].rating);
+            var titleP =  $("<p>").text("Title: " + result[i].title.substring(0, gifIndex - 1));
+            var gif = $("<img class='gifImg' src='" + stillGifUrl + "'>");
+            gif.attr("data-state", "still");
+            gif.attr("data-animate", animateGifUrl);
+            gif.attr("data-still", stillGifUrl);
+            $(gifDiv).append(titleP, gif, ratingP);
+            $("#gifs-holder").prepend(gifDiv);
+        };
+    });
+});
 
-    })
+renderButtons();
 
+$(".btn-sm").on("click", function (event) {
 
-    renderButtons()
+    event.preventDefault();
+    var addFood = $(".reaction-search").val().trim().toLowerCase();
+
+    if (foodTracker.indexOf(addFood) === -1) {
+        food.push(addFood);
+        renderButtons();
+    };
+    $(".reaction-search").val("");
 })
