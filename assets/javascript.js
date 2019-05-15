@@ -29,7 +29,7 @@ $("header").on("click", ".react-btn", function () {
 
     offset += (foodCounter * 10);
     var searchTerm = $(this).attr("id");
-    var queryUrl = "https://api.giphy.com/v1/gifs/search?api_key=UU8fjeOg71QTR3pqQBPam5po75K6tgIJ&q=" + searchTerm + "&limit=10&offset=" + offset + "&rating=PG&lang=en"
+    var queryUrl = "https://api.giphy.com/v1/gifs/search?api_key=FXW7Al3FjGv9tvaSSeODXc0h0qoP4F9Q=" + searchTerm + "&limit=10&offset=" + offset + "&rating=PG&lang=en"
     
     $.ajax({
         url: queryUrl,
